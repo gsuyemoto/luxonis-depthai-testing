@@ -2,48 +2,26 @@ import numpy as np
 import imutils
 import cv2
 
-# This stitching code is based on Luxonis code found in Github at:
-# https://github.com/luxonis/depthai-calibration/blob/4fe9b94ad6d9be2a6c44ad75d4c15076e760271d/dynamic_recalibration.py#L113
 class Stitcher:
-	def __init__(self, images, ratio=0.75, reprojThresh=5.0):
+	def __init__(self, images, ratio=0.75, reprojThresh=4.0):
 		# determine if we are using OpenCV v3.X
 		self.isv3 = imutils.is_cv3(or_better=True)
-
-		self.ransacMethod = cv2.RANSAC
-		if cv2.__version__ >= "4.5.4":
-			self.ransacMethod = cv2.USAC_MAGSAC
 
 		# unpack the images, then detect keypoints and extract
 		# local invariant descriptors from them
 		(imageB, imageA) = images
-		sift = cv2.SIFT_create()
-		kp1, des1 = sift.detectAndCompute(imageA,None)
-		kp2, des2 = sift.detectAndCompute(imageB,None)
+		(self.kpsA, featuresA) = self.detectAndDescribe(imageA)
+		(self.kpsB, featuresB) = self.detectAndDescribe(imageB)
+		# match features between the two images
+		M = self.matchKeypoints(self.kpsA, self.kpsB,
+			featuresA, featuresB, ratio, reprojThresh)
+		# if the match is None, then there aren't enough matched
+		# keypoints to create a panorama
+		if M is None:
+			self.homography = None
 
-		FLANN_INDEX_KDTREE = 1
-
-		index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
-		search_params = dict(checks=50)
-
-		flann = cv2.FlannBasedMatcher(index_params,search_params)
-		matches = flann.knnMatch(des1,des2,k=2)
-
-		pts1 = []
-		pts2 = []
-
-		for i,(m,n) in enumerate(matches):
-			if m.distance < 0.8*n.distance:
-				pts2.append(kp2[m.trainIdx].pt)
-				pts1.append(kp1[m.queryIdx].pt)
-
-		minKeypoints = 20
-		if len(pts1) < minKeypoints:
-			raise Exception(f'Need at least {minKeypoints} keypoints!')
-
-		pts1 = np.float32(pts1)
-		pts2 = np.float32(pts2)
-
-		self.homography, mask = cv2.findHomography(pts1, pts2, method = self.ransacMethod, ransacReprojThreshold = reprojThresh)
+		# otherwise, apply a perspective warp to stitch the images together
+		(self.matches, self.homography, self.status) = M
 
 	def warp(self, images):
 		(imageB, imageA) = images
