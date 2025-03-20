@@ -30,8 +30,8 @@ xout1.setStreamName("device1_output_to_host")
 cam1.preview.link(xout1.input)
 # cam1.video.link(xout1.input)
 
-info1 = dai.DeviceInfo("18443010915D2D1300") # MXID
-# info1 = dai.DeviceInfo("18443010D13E411300") # MXID
+# info1 = dai.DeviceInfo("18443010915D2D1300") # MXID
+info1 = dai.DeviceInfo("18443010D13E411300") # MXID
 
 device1 = dai.Device(pipeline1, info1)
 qDevice1 = device1.getOutputQueue(name="device1_output_to_host", maxSize=4, blocking=False)
@@ -53,8 +53,8 @@ xout2.setStreamName("device2_output_to_host")
 cam2.preview.link(xout2.input)
 # cam2.video.link(xout2.input)
 
-info2 = dai.DeviceInfo("18443010D13E411300") # MXID
-# info2 = dai.DeviceInfo("18443010915D2D1300") # MXID
+# info2 = dai.DeviceInfo("18443010D13E411300") # MXID
+info2 = dai.DeviceInfo("18443010915D2D1300") # MXID
 
 device2 = dai.Device(pipeline2, info2)
 qDevice2 = device2.getOutputQueue(name="device2_output_to_host", maxSize=4, blocking=False)

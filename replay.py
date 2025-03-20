@@ -4,7 +4,7 @@ import depthai as dai
 from depthai_sdk import Replay
 
 # Create Replay object
-replay = Replay("record/color.mp4")
+replay = Replay("/media/gary/Samsung USB/cam1.mp4")
 
 if replay is None:
     raise Exception("Could not find file to replay!!")

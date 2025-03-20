@@ -1,4 +1,4 @@
-Replay of video files:
+Recording of video files:
 1. Using DepthAI API, so far, the following encoding works:
   a. H265 at 4K (see depthai-experiments/gen2-record-replay)
   b. MJPEG at 4K

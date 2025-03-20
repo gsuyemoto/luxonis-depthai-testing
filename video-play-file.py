@@ -2,7 +2,7 @@ import cv2
 
 # Create a VideoCapture object
 # cap = cv2.VideoCapture('record/mjpeg-4k.mp4')
-cap = cv2.VideoCapture('record/h265-4k.mp4')
+cap = cv2.VideoCapture('/media/gary/Samsung USB/cam2.mp4')
 
 # Create a named window with a specific size
 cv2.namedWindow('Window', cv2.WINDOW_NORMAL)
